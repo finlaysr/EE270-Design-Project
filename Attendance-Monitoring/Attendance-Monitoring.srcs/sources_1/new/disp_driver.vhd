@@ -39,8 +39,52 @@ architecture Behavioral of disp_driver is
     end component;
     
     for converter : num_to_segments use entity work.num_to_segments(Behavioral);
+    
+    -- This is for the int array that will hold the numbers
+    type int_arr is array (3 downto 0) of integer;  
+    -- This is for all the array of segements that will hold all total segments
+    type seg_arr is array(3 downto 0) of std_logic_vector(0 to 6);
 begin
     -- TODO: turn number into output for 4x 7-segment displays
+    
+    -- Count will hold the current population
+    -- Separate the components of the count
+    -- Feed each unit into the num_to_seg and get the displays
+    -- Relate the display values to each display
+    
+    -- Use the mod operator to get digits
+    getSegs : process is
+    
+    variable digits : int_arr := (others => '0'); -- This is for holding the digits
+    variable allSegments : seg_arr := (others => std_logic_vector <= 0000); -- TODO: resolve this issue
+    -- This temp will hold the count
+    variable temp : integer := count;
+    
+    begin
+    
+    for i is 3 downto 0 loop
+    
+    digits(i) := temp mod 10; -- mod the current
+    temp := temp/10; -- Change the current
+    -- After this we probably have an array of the digits like this [0, 9, 3, 1]
+
+	-- Next add them to the num_segment and save their result
+    -- We will send each digit into the num_seg one by one
+    -- Then we will save the num_segement but for the display choice
+    port map(num => digits(i), seg => allSegments(i)); -- relate to the segments!
+    
+    end loop;
+    
+    -- in theory we would have now gotten an array of all the segements corresponding to the numbers
+    -- hopefully
+    -- Now we map them the segment
+    -- And to the display choice
+    for disp_choice is 0 to 3 loop
+    segments = allSegments(disp_choice)
+    end loop
+    
+    
+    end process
     
 
 end Behavioral;
