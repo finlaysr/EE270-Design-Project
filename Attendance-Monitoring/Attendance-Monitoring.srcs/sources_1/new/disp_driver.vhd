@@ -41,14 +41,24 @@ architecture Behavioral of disp_driver is
           seg : out std_logic_vector(0 to 6));
     end component;
     
-    for converter : num_to_segments use entity work.num_to_segments(Behavioral);
+    component digit_getter is
+    	Port (
+        	currNum          : in integer; -- Taking in the current Number
+        	digitVectorArray : out vector_array -- Geting the output
+    		);
+	end component;
+    
+    for seg_converter : num_to_segments use entity work.num_to_segments(Behavioral);
+    for dig_converter : digit_getter use entity work.digit_getter(main);
     
     -- This is for the int array that will hold the numbers
     type int_arr is array (3 downto 0) of integer;  
     -- This is for all the array of segements that will hold all total segments
     type seg_arr is array(3 downto 0) of std_logic_vector(0 to 6);
-begin
-    -- TODO: turn number into output for 4x 7-segment displays
+    
+    type vector_array is array (0 to 3) of std_logic_vector(0 downto 3);
+    
+	begin
     
     -- Count will hold the current population
     -- Separate the components of the count
@@ -62,23 +72,29 @@ begin
     variable allSegments : seg_arr := (others => (others => '0')); -- TODO: resolve this issue
     -- This temp will hold the count
     variable temp : integer := 0;
+    -- This is a conversion variable for the vector_array out
+    variable digitArray : vector_array;
     
     begin
     
-    temp := count;
+    ConvertsToDigit : dig_converter
+    port map(currNum => count, digitalVectorArray => digitArray); -- this gets the digits as an array 
+    -- (0, std_logic_v(9), std_logic_v(9), std_logic_v(9)) example
+    
+    -- Next we need to convert this array of std_logic_vectors into integers
+    for i is 0 to 3 loop
+    	digit(i) := to_integer(digitalVectorArray(i)); -- Convert the element to an integer 
+        -- store it in digit
+    end loop;
+    
+    -- So now we have an array of ints: (0, 9, 9, 9)
     
     getSegs_GEN : for i in 3 downto 0 generate
-    
-    -- TO DO, fix the mod 10 issue hat is not synthesisable
-    digits(i) := temp mod 10; -- mod the current
-    temp := temp/10; -- Change the current
-    -- After this we probably have an array of the digits like this [0, 9, 3, 1]
-    
-    
+     
 	-- Next add them to the num_segment and save their result
     -- We will send each digit into the num_seg one by one
     -- Then we will save the num_segement but for the display choice
-	num_to_seg_inst: converter
+	num_to_seg_inst: seg_converter
 	port map (num => digits(i), seg => allSegments(i)); -- relate to the segments!
     
 	end generate;
