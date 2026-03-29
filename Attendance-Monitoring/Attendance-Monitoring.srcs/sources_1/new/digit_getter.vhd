@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 20.03.2026 12:43:05
 -- Design Name: 
--- Module Name: disp_driver - Behavioral
+-- Module Name: digit_getter - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -44,19 +44,20 @@ begin
         variable digit3 : integer;
         
 	begin 
-    	temp := currNum;
+    	temp := currNum; -- Make the temp current number for good editing
         
-        digit0 := temp / 1000;
-        temp := temp - (digit0 * 1000);
+        digit0 := temp / 1000; -- Extract thousand
+        temp := temp - (digit0 * 1000); -- Move all unwanted!
         
-        digit1 := temp / 100;
-        temp := temp - (digit1 * 100);
+        digit1 := temp / 100; -- Extract hundred
+        temp := temp - (digit1 * 100); -- Move all unwanted!
         
-        digit2 := temp / 10;
-        temp := temp - (digit2 * 10);
+        digit2 := temp / 10; -- Extract tens
+        temp := temp - (digit2 * 10); -- Move all unwanted!
         
-        digit3 := temp;
-        
+        digit3 := temp; -- Just add the single unit
+
+		-- All add to the output array!
         digitVectorArray(0) <= std_logic_vector(to_unsigned(digit0, 4));
         digitVectorArray(1) <= std_logic_vector(to_unsigned(digit1, 4));
         digitVectorArray(2) <= std_logic_vector(to_unsigned(digit2, 4));
